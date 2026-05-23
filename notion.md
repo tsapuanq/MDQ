@@ -17,3 +17,11 @@ Share of MER_000000 in business:
 2.1 %
 Share of MER_000000 in consumer:
 0.88 %
+
+
+## 2. Card tier в consumer 3 типа:
+```
+'Standard'
+'Affluent'
+'Premium'
+```
