@@ -55,8 +55,6 @@ mcc_dict_df = mcc_dict_df[
     & (mcc_dict_df["mcc_name"].str.len() > 0)
 ].copy()
 
-# если один MCC встретился несколько раз, оставляем самый длинный вариант названия
-# обычно он информативнее, чем короткая строка из оглавления
 mcc_dict_df["name_len"] = mcc_dict_df["mcc_name"].str.len()
 
 mcc_dict_df = (
