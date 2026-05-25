@@ -1,2 +1,4 @@
 data/
 .omx/
+__pycache__/
+*.egg-info/
