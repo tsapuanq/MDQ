@@ -222,9 +222,5 @@ Candidate feature families:
 - Diversity/concentration: `unique_merchants`, `unique_mcc`, `unique_countries`, `merchant_entropy`, `mcc_entropy`.
 - MCC composition: advertising, software/cloud, business services, office supplies, telecom, logistics, professional services, and composite B2B ratios.
 
-Leakage/risk notes:
 
-- Do not use `card_tier` if it directly encodes segment or product type.
-- Keep raw merchant and transaction fields available for audit, but use cleaned display/key handling for the `MER_000000 + MCC 7012` artifact.
-- Treat MCC names as interpretability aids; MCC codes remain the reliable join key.
-- Transaction-level findings should not be used directly for modeling without card-level aggregation.
+![EDA overview](./EDA.png)
