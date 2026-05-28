@@ -161,8 +161,11 @@ Business cards also have much larger typical transaction sizes at the card level
 | --- | ---: | ---: |
 | Median of card average amount | 155,610 KZT | 26,775 KZT |
 | Median of card median amount | 84,559 KZT | 9,674 KZT |
+| Amount coefficient of variation | 1.32 | 1.78 |
 
-Feature implication: `total_amount`, `avg_amount`, `median_amount`, and large-ticket ratios.
+Interpretation: business cards have larger typical transaction sizes, while consumer cards have more variable transaction amounts inside the same card.
+
+Feature implication: `total_amount`, `avg_amount`, `median_amount`, `amount_cv`, and large-ticket ratios.
 
 ### Channel, Recurring, And Digital Behavior
 
@@ -185,8 +188,14 @@ Card-level medians:
 | --- | ---: | ---: |
 | Weekday business-hours ratio | 64.29% | 39.47% |
 | Weekend ratio | 12.41% | 35.02% |
+| Evening ratio | 10.71% | 31.67% |
+| Night ratio | 15.70% | 9.52% |
+| Monthly spend growth | 1.04% | -10.09% |
+| Active months | 6 | 6 |
 
-Interpretation: business cards are more work-hours oriented; consumer cards are more weekend-heavy.
+Interpretation: business cards are more work-hours oriented; consumer cards are more weekend-heavy and evening-heavy. `evening_ratio` is a useful anti-business signal. `night_ratio` and `monthly_spend_growth` are weaker and should be validated during modeling.
+
+`active_months` is not useful in this form because the median is 6 months for both segments.
 
 ### Merchant And MCC Diversity
 
@@ -198,6 +207,24 @@ Consumer cards are broader across merchants and MCCs:
 | Median unique MCC/card | 15 | 32 |
 
 Interpretation: business cards are more concentrated in a narrower set of operational categories, while consumer cards cover broader everyday spending.
+
+### Country And Merchant Country Behavior
+
+Two different geography fields are used:
+
+- `country`: country where the transaction was processed.
+- `merchant_country`: country where the merchant is registered or billed.
+
+Card-level medians:
+
+| Metric | Business | Consumer |
+| --- | ---: | ---: |
+| Foreign transaction ratio, `country != Kazakhstan` | 29.22% | 21.52% |
+| Foreign merchant ratio, `merchant_country != Kazakhstan` | 32.31% | 2.42% |
+
+Interpretation: foreign transaction ratio is slightly higher for business cards, but the difference is not very clean. Foreign merchant ratio is much stronger because business cards often pay foreign-registered digital providers such as ads, cloud, hosting, SaaS, and other online services.
+
+Feature implication: `foreign_merchant_ratio` should be a strong candidate feature. `foreign_transaction_ratio` can be tested, but it looks weaker.
 
 ### B2B MCC Exposure
 
@@ -216,11 +243,18 @@ The EDA supports a card-level modeling approach:
 
 Candidate feature families:
 
-- Spend size: `total_amount`, `avg_amount`, `median_amount`, `max_amount`, large-transaction ratios.
+- Spend size: `total_amount`, `avg_amount`, `median_amount`, `max_amount`, `amount_cv`, large-transaction ratios.
 - Channel/payment: `online_ratio`, `pos_ratio`, `is_recurring_ratio`, `tokenized_ratio`, `recurring_capable_ratio`.
-- Timing: `weekday_business_hours_ratio`, `weekday_non_business_hours_ratio`, `weekend_ratio`.
-- Diversity/concentration: `unique_merchants`, `unique_mcc`, `unique_countries`, `merchant_entropy`, `mcc_entropy`.
+- Timing: `weekday_business_hours_ratio`, `weekday_non_business_hours_ratio`, `weekend_ratio`, `evening_ratio`, `night_ratio`, `monthly_spend_growth`.
+- Geography: `foreign_transaction_ratio`, `foreign_merchant_ratio`.
+- Diversity/concentration: `unique_merchants`, `unique_mcc`, `merchant_entropy`, `mcc_entropy`.
 - MCC composition: advertising, software/cloud, business services, office supplies, telecom, logistics, professional services, and composite B2B ratios.
+
+Features to treat carefully:
+
+- `active_months`: weak in current data because most cards are active during all six months.
+- raw `merchant_id` and `merchant_name`: high-cardinality identifiers can overfit and can be affected by artifacts like `MER_000000`.
+- `card_number`: identifier only, not a modeling feature.
 
 
 ![EDA overview](./EDA.png)
