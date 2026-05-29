@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hidden Business Activity Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Mastercard Data Quest</p>
+        <h1>Hidden business activity among consumer cards</h1>
+        <p class="lead">
+          A compact view of the final model: supervised baseline, PU ranking, action tiers and the cards that should go to manual business review.
+        </p>
+      </div>
+      <div class="heroPanel">
+        <span>Output type</span>
+        <strong>Prioritized lead list</strong>
+        <small>not confirmed entrepreneur labels</small>
+      </div>
+    </section>
+
+    <section class="metricGrid" aria-label="Key metrics">
+      <article class="metric">
+        <span>Consumer cards scored</span>
+        <strong>80,000</strong>
+        <small>full consumer portfolio</small>
+      </article>
+      <article class="metric">
+        <span>Tier 1 leads</span>
+        <strong id="tier1Count">41</strong>
+        <small>top 0.05% manual review</small>
+      </article>
+      <article class="metric">
+        <span>Baseline F1</span>
+        <strong id="baselineF1">0.9999</strong>
+        <small>known business vs consumer</small>
+      </article>
+      <article class="metric">
+        <span>PU lift@1%</span>
+        <strong id="puLift">4.2x</strong>
+        <small>held-out positive recovery</small>
+      </article>
+    </section>
+
+    <section class="band twoCol">
+      <div>
+        <div class="sectionHead">
+          <p class="eyebrow">Lead funnel</p>
+          <h2>Consumer cards by action tier</h2>
+        </div>
+        <div id="tierBars" class="bars"></div>
+      </div>
+      <div>
+        <div class="sectionHead">
+          <p class="eyebrow">Model story</p>
+          <h2>Why PU after baseline</h2>
+        </div>
+        <ol class="steps">
+          <li><strong>Baseline:</strong> proves the card-level behavior separates known business cards from consumer background.</li>
+          <li><strong>Problem:</strong> consumer cards are not clean negatives, they may include hidden business users.</li>
+          <li><strong>PU ranking:</strong> treats business as positive and consumer as unlabeled, then ranks business-likeness.</li>
+          <li><strong>Action:</strong> converts ranking into review, campaign and watchlist queues.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="sectionHead">
+        <p class="eyebrow">Manual review queue</p>
+        <h2>Top business-like consumer cards</h2>
+      </div>
+      <div class="tableWrap">
+        <table id="topTable">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Business-like %</th>
+              <th>Reasons</th>
+              <th>Top merchants</th>
+              <th>Recommended action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band twoCol">
+      <div>
+        <div class="sectionHead">
+          <p class="eyebrow">Sanity check</p>
+          <h2>Tier 1 by bank</h2>
+        </div>
+        <div id="bankBars" class="bars compact"></div>
+      </div>
+      <div>
+        <div class="sectionHead">
+          <p class="eyebrow">Sanity check</p>
+          <h2>Tier 1 by card tier</h2>
+        </div>
+        <div id="cardTierBars" class="bars compact"></div>
+      </div>
+    </section>
+
+    <section class="band twoCol">
+      <div>
+        <div class="sectionHead">
+          <p class="eyebrow">Metrics</p>
+          <h2>What the numbers mean</h2>
+        </div>
+        <div class="note">
+          <p>
+            The near perfect supervised metrics show that known business and consumer segments are easy to separate in this synthetic dataset.
+            They do not prove that every top consumer lead is truly an entrepreneur.
+          </p>
+          <p>
+            PU metrics are proxy validation: they check if known business cards are ranked above consumer background.
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="sectionHead">
+          <p class="eyebrow">Limitations</p>
+          <h2>Where the model can fail</h2>
+        </div>
+        <div id="riskList" class="riskList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
