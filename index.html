@@ -7,23 +7,26 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Mastercard Data Quest</p>
-        <h1>Hidden business activity among consumer cards</h1>
-        <p class="lead">
-          A compact view of the final model: supervised baseline, PU ranking, action tiers and the cards that should go to manual business review.
-        </p>
-      </div>
-      <div class="heroPanel">
-        <span>Output type</span>
-        <strong>Prioritized lead list</strong>
-        <small>not confirmed entrepreneur labels</small>
-      </div>
-    </section>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Mastercard Data Quest</p>
+      <h1>Hidden business activity dashboard</h1>
+    </div>
+    <nav class="nav">
+      <a href="#features">Features</a>
+      <a href="#model">Model</a>
+      <a href="#results">Results</a>
+      <a href="#leads">Leads</a>
+    </nav>
+  </header>
 
-    <section class="metricGrid" aria-label="Key metrics">
+  <main class="page">
+    <section class="summaryGrid" aria-label="Executive summary">
+      <article class="metric heroMetric">
+        <span>Final output</span>
+        <strong>Business-like lead list</strong>
+        <small>PU ranking, not confirmed entrepreneur labels</small>
+      </article>
       <article class="metric">
         <span>Consumer cards scored</span>
         <strong>80,000</strong>
@@ -32,47 +35,174 @@
       <article class="metric">
         <span>Tier 1 leads</span>
         <strong id="tier1Count">41</strong>
-        <small>top 0.05% manual review</small>
+        <small>top 0.05% manual review queue</small>
       </article>
       <article class="metric">
-        <span>Baseline F1</span>
-        <strong id="baselineF1">0.9999</strong>
-        <small>known business vs consumer</small>
-      </article>
-      <article class="metric">
-        <span>PU lift@1%</span>
-        <strong id="puLift">4.2x</strong>
-        <small>held-out positive recovery</small>
+        <span>Best PU experiment</span>
+        <strong id="bestPuMethod">BaggingPU</strong>
+        <small id="bestPuFeatureSet">full no online</small>
       </article>
     </section>
 
-    <section class="band twoCol">
-      <div>
-        <div class="sectionHead">
-          <p class="eyebrow">Lead funnel</p>
-          <h2>Consumer cards by action tier</h2>
+    <section id="features" class="section">
+      <div class="sectionHead splitHead">
+        <div>
+          <p class="eyebrow">Feature evidence</p>
+          <h2>Why these card-level features make sense</h2>
         </div>
-        <div id="tierBars" class="bars"></div>
+        <p>
+          The model is based on behavior per card: B2B spend, recurring payments, foreign merchants,
+          working-time usage and lower consumer leisure pattern.
+        </p>
       </div>
-      <div>
-        <div class="sectionHead">
-          <p class="eyebrow">Model story</p>
-          <h2>Why PU after baseline</h2>
+
+      <div class="featureLayout">
+        <div class="panel">
+          <h3>Strongest separating features</h3>
+          <div id="featureBars" class="bars dense"></div>
         </div>
-        <ol class="steps">
-          <li><strong>Baseline:</strong> proves the card-level behavior separates known business cards from consumer background.</li>
-          <li><strong>Problem:</strong> consumer cards are not clean negatives, they may include hidden business users.</li>
-          <li><strong>PU ranking:</strong> treats business as positive and consumer as unlabeled, then ranks business-likeness.</li>
-          <li><strong>Action:</strong> converts ranking into review, campaign and watchlist queues.</li>
-        </ol>
+        <div class="panel">
+          <h3>What top candidates look like</h3>
+          <div id="profileBars" class="bars dense"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Most common reasons in top 100 PU candidates</h3>
+        <div id="reasonBars" class="bars reasonBars"></div>
       </div>
     </section>
 
-    <section class="band">
-      <div class="sectionHead">
-        <p class="eyebrow">Manual review queue</p>
-        <h2>Top business-like consumer cards</h2>
+    <section id="model" class="section">
+      <div class="sectionHead splitHead">
+        <div>
+          <p class="eyebrow">Model approach</p>
+          <h2>Baseline first, PU for the final ranking</h2>
+        </div>
+        <p>
+          Baseline proves the feature signal. PU is the final framing because consumer cards are unlabeled background,
+          not clean negatives.
+        </p>
       </div>
+
+      <div class="modelFlow">
+        <article class="flowStep">
+          <span>01</span>
+          <strong>Supervised baseline</strong>
+          <p>Known business cards are compared with consumer cards to validate that features separate business-like behavior.</p>
+        </article>
+        <article class="flowStep">
+          <span>02</span>
+          <strong>Baseline sanity checks</strong>
+          <p>Supervised probability is compared with anomaly score and distance to the business centroid.</p>
+        </article>
+        <article class="flowStep">
+          <span>03</span>
+          <strong>PU learning</strong>
+          <p>Business cards are positives. Consumer cards stay unlabeled. The output is a relative business-like rank.</p>
+        </article>
+        <article class="flowStep">
+          <span>04</span>
+          <strong>Action tiers</strong>
+          <p>The rank is converted into review, campaign, watchlist and no-action queues.</p>
+        </article>
+      </div>
+
+      <div class="featureLayout">
+        <div class="panel">
+          <h3>Baseline model comparison</h3>
+          <div class="tableWrap compactTable">
+            <table id="modelTable">
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Features</th>
+                  <th>Val F1</th>
+                  <th>Val PR-AUC</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>PU experiment leaderboard</h3>
+          <div class="tableWrap compactTable">
+            <table id="experimentTable">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Features</th>
+                  <th>Test PR-AUC</th>
+                  <th>Precision@0.5%</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="results" class="section">
+      <div class="sectionHead splitHead">
+        <div>
+          <p class="eyebrow">Results</p>
+          <h2>Metrics, tiers and baseline vs PU agreement</h2>
+        </div>
+        <p>
+          Near-perfect supervised metrics are expected on synthetic data. The useful result is a short,
+          explainable operational list.
+        </p>
+      </div>
+
+      <div class="metricGrid" aria-label="Model metrics">
+        <article class="metric">
+          <span>Baseline F1</span>
+          <strong id="baselineF1">0.9999</strong>
+          <small>known business vs consumer</small>
+        </article>
+        <article class="metric">
+          <span>PU PR-AUC</span>
+          <strong id="puPrauc">1.000</strong>
+          <small>held-out business recovery</small>
+        </article>
+        <article class="metric">
+          <span>PU lift@1%</span>
+          <strong id="puLift">4.2x</strong>
+          <small>proxy validation vs background</small>
+        </article>
+        <article class="metric">
+          <span>Top 1% overlap</span>
+          <strong id="overlapTop1">61.4%</strong>
+          <small>PU vs supervised baseline</small>
+        </article>
+      </div>
+
+      <div class="featureLayout">
+        <div class="panel">
+          <h3>Consumer cards by action tier</h3>
+          <div id="tierBars" class="bars"></div>
+        </div>
+        <div class="panel">
+          <h3>Baseline vs PU overlap</h3>
+          <div id="overlapBars" class="bars"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="leads" class="section">
+      <div class="sectionHead splitHead">
+        <div>
+          <p class="eyebrow">Lead review dashboard</p>
+          <h2>Who fell into hidden business candidates</h2>
+        </div>
+        <p>
+          These are the highest-ranked consumer cards. The next step is manual review and commercial outreach,
+          not automatic reclassification.
+        </p>
+      </div>
+
       <div class="tableWrap">
         <table id="topTable">
           <thead>
@@ -81,54 +211,36 @@
               <th>Business-like %</th>
               <th>Reasons</th>
               <th>Top merchants</th>
-              <th>Recommended action</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-    </section>
 
-    <section class="band twoCol">
-      <div>
-        <div class="sectionHead">
-          <p class="eyebrow">Sanity check</p>
-          <h2>Tier 1 by bank</h2>
+      <div class="featureLayout lowerDash">
+        <div class="panel">
+          <h3>Tier 1 by bank</h3>
+          <div id="bankBars" class="bars compact"></div>
         </div>
-        <div id="bankBars" class="bars compact"></div>
-      </div>
-      <div>
-        <div class="sectionHead">
-          <p class="eyebrow">Sanity check</p>
-          <h2>Tier 1 by card tier</h2>
+        <div class="panel">
+          <h3>Tier 1 by card tier</h3>
+          <div id="cardTierBars" class="bars compact"></div>
         </div>
-        <div id="cardTierBars" class="bars compact"></div>
       </div>
     </section>
 
-    <section class="band twoCol">
-      <div>
-        <div class="sectionHead">
-          <p class="eyebrow">Metrics</p>
-          <h2>What the numbers mean</h2>
+    <section class="section">
+      <div class="sectionHead splitHead">
+        <div>
+          <p class="eyebrow">Risk notes</p>
+          <h2>Where the model can be wrong</h2>
         </div>
-        <div class="note">
-          <p>
-            The near perfect supervised metrics show that known business and consumer segments are easy to separate in this synthetic dataset.
-            They do not prove that every top consumer lead is truly an entrepreneur.
-          </p>
-          <p>
-            PU metrics are proxy validation: they check if known business cards are ranked above consumer background.
-          </p>
-        </div>
+        <p>
+          The score finds business-like spending behavior. It does not prove legal entrepreneur status.
+        </p>
       </div>
-      <div>
-        <div class="sectionHead">
-          <p class="eyebrow">Limitations</p>
-          <h2>Where the model can fail</h2>
-        </div>
-        <div id="riskList" class="riskList"></div>
-      </div>
+      <div id="riskList" class="riskGrid"></div>
     </section>
   </main>
 
